@@ -7,6 +7,13 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface SimpleApi {
-    @GET("/something")
+    @GET("pogoda")
     suspend fun getYandex(): Response<ResponseBody>
+
+    @GET("pogoda")
+    suspend fun getOzon(): Response<ResponseBody>
+
+    @GET("best")
+    suspend fun getPikabu(): Response<ResponseBody>
+
 }
