@@ -48,19 +48,27 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Dialog
+import com.awrdev.white_list_tester.api.ConnectivityTester.testBannedWebsites
+import com.awrdev.white_list_tester.api.ConnectivityTester.testForeignWebsites
+import com.awrdev.white_list_tester.api.ConnectivityTester.testRussianWebsites
+import com.awrdev.white_list_tester.api.ConnectivityTester.testWhiteList
 import com.awrdev.white_list_tester.ui.home.components.ListStatusCard
 import com.awrdev.white_list_tester.ui.home.components.TransportTypeCard
 import com.awrdev.white_list_tester.ui.home.components.TransportTypeInfoDialog
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, action: (Int)->Unit) {
     val scope = rememberCoroutineScope()
+    val scope1 = rememberCoroutineScope()
+    val scope2 = rememberCoroutineScope()
+    val scope3 = rememberCoroutineScope()
     val context = LocalContext.current
-    val message = remember { mutableStateOf("Неизвестно") }
-    val messageOzon = remember { mutableStateOf("Неизвестно") }
-    val messagePikabu = remember { mutableStateOf("Неизвестно") }
-    val messageYoutube = remember { mutableStateOf("Неизвестно") }
+
+    val whiteListStatus = remember { mutableStateOf("Not checked yet") }
+    val RussiaStatus = remember { mutableStateOf("Not checked yet") }
+    val ForeignStatus = remember { mutableStateOf("Not checked yet") }
+    val BannedStatus = remember { mutableStateOf("Not checked yet") }
 
     val isDialogShown = remember { mutableStateOf(false) }
     Column(modifier = modifier.padding(8.dp)) {
@@ -73,69 +81,28 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Белый список")
-        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Российские сайты")
-        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Зарубежные сайты")
-        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Заблокированные сайты")
-        Button(onClick = {}) {
-            Text(text = "Ноавя проверка")
-        }
-
-        HostStatusCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            statusCode = message.value
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            statusCode = messageOzon.value
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            statusCode = messagePikabu.value
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            statusCode = messageYoutube.value
-        )
-
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
+            action(1)
+        }), title = "Белый список", status = whiteListStatus.value)
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
+            action(2)
+        }), title = "Российские сайты", status = RussiaStatus.value)
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
+            action(3)
+        }), title = "Зарубежные сайты", status = ForeignStatus.value)
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
+            action(4)
+        }), title = "Заблокированные сайты", status = BannedStatus.value)
+        Spacer(modifier = Modifier.height(50.dp))
         Button(onClick = {
             scope.launch {
-                message.value = "Проверяем..."
-                messageOzon.value = "Проверяем..."
-                messagePikabu.value = "Проверяем..."
-                messageYoutube.value = "Проверяем..."
-                delay(1000L.milliseconds)
-
-                withContext(Dispatchers.IO) {
-                    message.value = checkHost("https://yandex.ru") + " Яндекс"
-                }
-                withContext(Dispatchers.IO) {
-                    messageOzon.value = checkHost("https://ozon.ru") + " Озон"
-
-                }
-                withContext(Dispatchers.IO) {
-                    messagePikabu.value = checkHost("https://pikabu.ru") + " Пикабу"
-
-                }
-                withContext(Dispatchers.IO) {
-                    messageYoutube.value = checkHost("https://youtube.com") + " Ютаб"
-
-                }
+                whiteListStatus.value = testWhiteList()
+                RussiaStatus.value = testRussianWebsites()
+                ForeignStatus.value = testForeignWebsites()
+                BannedStatus.value = testBannedWebsites()
             }
-
         }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Начать проверку")
+            Text(text = "Новая проверка")
         }
     }
     if (isDialogShown.value) {
@@ -144,25 +111,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             transportType = getNetworkType(context)
         )
     }
-}
-
-fun checkHost(url: String): String {
-    var resultMessage = "None"
-    try {
-        RetrofitInstance.prepareCall(url)
-        val check = RetrofitInstance.call!!.execute()
-        resultMessage = check.code.toString()
-    } catch (e: Exception) {
-        if (e is UnknownHostException) {
-            resultMessage = "No connection"
-        }
-        if (e is SocketTimeoutException) {
-            resultMessage = "Timeout"
-        }
-        Log.e("AWR", e.message.toString())
-        Log.e("AWR", e.javaClass.toString())
-    }
-    return resultMessage
 }
 
 

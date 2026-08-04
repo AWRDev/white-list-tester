@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -15,12 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ListStatusCard(modifier: Modifier = Modifier, title: String) {
+fun ListStatusCard(modifier: Modifier = Modifier, title: String, status: String) {
     Card(modifier = modifier) {
         Row(modifier = Modifier.fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = title)
-            Icon(imageVector = Icons.Default.Check, contentDescription = "Available")
+            when (status){
+                "Not checked yet" -> Icon(imageVector = Icons.Default.DateRange, contentDescription = status)
+                "In progress" -> Icon(imageVector = Icons.Default.Refresh, contentDescription = status)
+                "Available" -> Icon(imageVector = Icons.Default.Check, contentDescription = status)
+                "Partially available" -> Icon(imageVector = Icons.Default.Warning, contentDescription = status)
+                "Not available" -> Icon(imageVector = Icons.Default.Close, contentDescription = status)
+            }
+
         }
     }
 }
