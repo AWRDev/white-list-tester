@@ -36,8 +36,21 @@ import kotlin.time.Duration.Companion.milliseconds
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
+import com.awrdev.white_list_tester.ui.home.components.ListStatusCard
 import com.awrdev.white_list_tester.ui.home.components.TransportTypeCard
+import com.awrdev.white_list_tester.ui.home.components.TransportTypeInfoDialog
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 @Composable
@@ -48,16 +61,53 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     val messageOzon = remember { mutableStateOf("Неизвестно") }
     val messagePikabu = remember { mutableStateOf("Неизвестно") }
     val messageYoutube = remember { mutableStateOf("Неизвестно") }
+
+    val isDialogShown = remember { mutableStateOf(false) }
     Column(modifier = modifier.padding(8.dp)) {
-        TransportTypeCard(modifier = Modifier.fillMaxWidth(), transportType = getNetworkType(context))
+        TransportTypeCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = {
+                    isDialogShown.value = true
+                }), transportType = getNetworkType(context)
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(modifier = Modifier.fillMaxWidth().height(100.dp),statusCode = message.value)
+
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Белый список")
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Российские сайты")
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Зарубежные сайты")
+        ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp), title = "Заблокированные сайты")
+        Button(onClick = {}) {
+            Text(text = "Ноавя проверка")
+        }
+
+        HostStatusCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            statusCode = message.value
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(modifier = Modifier.fillMaxWidth().height(100.dp),statusCode = messageOzon.value)
+        HostStatusCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            statusCode = messageOzon.value
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(modifier = Modifier.fillMaxWidth().height(100.dp),statusCode = messagePikabu.value)
+        HostStatusCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            statusCode = messagePikabu.value
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        HostStatusCard(modifier = Modifier.fillMaxWidth().height(100.dp),statusCode = messageYoutube.value)
+        HostStatusCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            statusCode = messageYoutube.value
+        )
 
         Button(onClick = {
             scope.launch {
@@ -71,15 +121,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     message.value = checkHost("https://yandex.ru") + " Яндекс"
                 }
                 withContext(Dispatchers.IO) {
-                    messageOzon.value =  checkHost("https://ozon.ru") + " Озон"
+                    messageOzon.value = checkHost("https://ozon.ru") + " Озон"
 
                 }
                 withContext(Dispatchers.IO) {
-                    messagePikabu.value =  checkHost("https://pikabu.ru") + " Пикабу"
+                    messagePikabu.value = checkHost("https://pikabu.ru") + " Пикабу"
 
                 }
                 withContext(Dispatchers.IO) {
-                    messageYoutube.value =  checkHost("https://youtube.com") + " Ютаб"
+                    messageYoutube.value = checkHost("https://youtube.com") + " Ютаб"
 
                 }
             }
@@ -88,19 +138,25 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             Text(text = "Начать проверку")
         }
     }
+    if (isDialogShown.value) {
+        TransportTypeInfoDialog(
+            onDismissRequest = { isDialogShown.value = false },
+            transportType = getNetworkType(context)
+        )
+    }
 }
 
-fun checkHost(url: String): String{
+fun checkHost(url: String): String {
     var resultMessage = "None"
-    try{
+    try {
         RetrofitInstance.prepareCall(url)
         val check = RetrofitInstance.call!!.execute()
         resultMessage = check.code.toString()
-    } catch (e: Exception){
-        if (e is UnknownHostException){
+    } catch (e: Exception) {
+        if (e is UnknownHostException) {
             resultMessage = "No connection"
         }
-        if (e is SocketTimeoutException){
+        if (e is SocketTimeoutException) {
             resultMessage = "Timeout"
         }
         Log.e("AWR", e.message.toString())
@@ -110,17 +166,18 @@ fun checkHost(url: String): String{
 }
 
 
-
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 fun getNetworkType(context: Context): String {
     // Получаем ConnectivityManager из контекста системы
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     // Получаем текущую активную сеть
     val activeNetwork = connectivityManager.activeNetwork ?: return "Нет подключения"
 
     // Получаем характеристики (возможности) активной сети
-    val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return "Нет подключения"
+    val capabilities =
+        connectivityManager.getNetworkCapabilities(activeNetwork) ?: return "Нет подключения"
 
     return when {
         // Проверяем подключение через Wi-Fi
@@ -134,4 +191,12 @@ fun getNetworkType(context: Context): String {
 
         else -> "Другой тип подключения"
     }
+}
+
+@Composable
+fun GetFakeStatus(): Unit{
+    return arrayOf(
+        Icon(imageVector = Icons.Default.Check, contentDescription = ""),
+        Icon(imageVector = Icons.Default.Refresh, contentDescription = ""),
+        Icon(imageVector = Icons.Default.Close, contentDescription = "")).random()
 }
