@@ -1,5 +1,6 @@
 package com.awrdev.white_list_tester.ui.home.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,21 +18,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.awrdev.white_list_tester.repository.MainRepository
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun ListStatusCard(modifier: Modifier = Modifier, title: String, status: String) {
     Card(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = title)
-            when (status){
-                "Not checked yet" -> Icon(imageVector = Icons.Default.DateRange, contentDescription = status)
-                "In progress" -> Icon(imageVector = Icons.Default.Refresh, contentDescription = status)
-                "Available" -> Icon(imageVector = Icons.Default.Check, contentDescription = status)
-                "Partially available" -> Icon(imageVector = Icons.Default.Warning, contentDescription = status)
-                "Not available" -> Icon(imageVector = Icons.Default.Close, contentDescription = status)
+            Row() {
+                if (status != "Not checked yet"){
+                    Text(text = "${MainRepository.lastTimeOfCheck.value.truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_TIME)} •")
+                }
+                when (status){
+                    "Not checked yet" -> Icon(imageVector = Icons.Default.DateRange, contentDescription = status)
+                    "In progress" -> Icon(imageVector = Icons.Default.Refresh, contentDescription = status)
+                    "Available" -> Icon(imageVector = Icons.Default.Check, contentDescription = status)
+                    "Partially available" -> Icon(imageVector = Icons.Default.Warning, contentDescription = status)
+                    "Not available" -> Icon(imageVector = Icons.Default.Close, contentDescription = status)
+                }
             }
-
         }
     }
 }

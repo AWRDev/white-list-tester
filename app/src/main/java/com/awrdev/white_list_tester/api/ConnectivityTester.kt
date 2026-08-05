@@ -3,6 +3,7 @@ package com.awrdev.white_list_tester.api
 import android.util.Log
 import com.awrdev.white_list_tester.ResourcesList
 import com.awrdev.white_list_tester.WebResource
+import com.awrdev.white_list_tester.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
@@ -14,7 +15,8 @@ object ConnectivityTester {
         var successTries = 0
         var failedTries = 0
             for (resource in givenList){
-                    val resultHost = checkHost(resource.url)
+                val resultHost = checkHost(resource.url)
+                MainRepository.updateOrAddResourceStatus(resource.url, resultHost)
                 when (resultHost.firstOrNull()) {
                     'Н', 'П', '4', '5' -> failedTries++
                     '2', '3' -> successTries++

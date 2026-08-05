@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.awrdev.white_list_tester.ResourcesList
 import com.awrdev.white_list_tester.api.RetrofitInstance
+import com.awrdev.white_list_tester.repository.MainRepository
 import com.awrdev.white_list_tester.ui.home.components.HostStatusCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -51,7 +52,12 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
         else -> ResourcesList.BannedWebsites
     }
     for (item in listToCheck.resourcesList){
-        status.add("${item.name} Не проверено")
+        if (item.url in MainRepository.savedStatuses){
+            status.add("${MainRepository.savedStatuses[item.url]} ${item.name}")
+        }
+        else{
+            status.add("${item.name} Не проверено")
+        }
     }
     LazyColumn(modifier = modifier) {
         item {
@@ -91,6 +97,7 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
 
                     for ((i, element) in listToCheck.resourcesList.withIndex()){
                         withContext(Dispatchers.IO) {
+                            MainRepository.updateOrAddResourceStatus(element.url, checkHost(element.url))
                             status[i] = "${checkHost(element.url)}  ${element.name}"
                             Log.d("AWR2", i.toString())
                         }

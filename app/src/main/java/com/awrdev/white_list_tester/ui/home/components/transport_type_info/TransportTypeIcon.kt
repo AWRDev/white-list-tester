@@ -1,4 +1,4 @@
-package com.awrdev.white_list_tester.ui.home.components
+package com.awrdev.white_list_tester.ui.home.components.transport_type_info
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
