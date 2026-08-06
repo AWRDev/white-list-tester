@@ -77,7 +77,6 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
             }
         }
         itemsIndexed(listToCheck.resourcesList){key, item ->
-            Log.d("AWR0", status.size.toString())
             HostStatusCard(
                 modifier = Modifier
                     .fillMaxWidth()

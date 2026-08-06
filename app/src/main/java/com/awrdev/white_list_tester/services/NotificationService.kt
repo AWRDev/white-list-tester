@@ -17,7 +17,7 @@ class NotificationService: Service() {
     }
 
     override fun onCreate() {
-        Log.d("AWR", "Cerated")
+        Log.d("AWR", "Service is created")
         super.onCreate()
         }
 

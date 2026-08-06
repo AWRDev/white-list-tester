@@ -10,7 +10,7 @@ class App: Application() {
         val channel = NotificationChannel(
             "status",
             "Service status",
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_DEFAULT
         )
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)

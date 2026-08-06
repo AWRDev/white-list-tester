@@ -31,19 +31,19 @@ object ConnectivityTester {
         }
     }
     suspend fun testWhiteList(): String{
-        val list = ResourcesList.WhiteList.resourcesList
+        val list = ResourcesList.WhiteList.resourcesList.asSequence().shuffled().take(3).toList()
         return testGivenList(list)
     }
     suspend fun testRussianWebsites():String{
-        val list = ResourcesList.RussianWebsites.resourcesList
+        val list = ResourcesList.RussianWebsites.resourcesList.asSequence().shuffled().take(3).toList()
         return testGivenList(list)
     }
     suspend fun testForeignWebsites(): String{
-        val list = ResourcesList.ForeignWebsites.resourcesList
+        val list = ResourcesList.ForeignWebsites.resourcesList.asSequence().shuffled().take(3).toList()
         return testGivenList(list)
     }
     suspend fun testBannedWebsites(): String{
-        val list = ResourcesList.BannedWebsites.resourcesList
+        val list = ResourcesList.BannedWebsites.resourcesList.asSequence().shuffled().take(3).toList()
         return testGivenList(list)
     }
 

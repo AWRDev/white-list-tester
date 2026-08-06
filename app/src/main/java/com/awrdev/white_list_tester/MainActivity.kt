@@ -37,10 +37,10 @@ class MainActivity : ComponentActivity() {
         ) { isGranted: Boolean ->
             if (isGranted) {
                 // Разрешение получено, запускаем логику (например, открываем камеру)
-                Log.d("AWR", "YAHSJHAKSAK")
+                Log.d("AWR", "Notifications are granted")
             } else {
                 // Отказ. Объясните пользователю, почему функция недоступна
-                Log.d("AWR", "aaaaaaaaaaaaaaaaaa")
+                Log.d("AWR", "Notifications are denied")
             }
         }
 
