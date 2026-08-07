@@ -40,10 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.awrdev.white_list_tester.repository.MainRepository
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportType.Companion.getContainerColor
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeCard
 import com.awrdev.white_list_tester.ui.home.getNetworkType
+import com.awrdev.white_list_tester.ui.theme.GreenBasic
+import com.awrdev.white_list_tester.ui.theme.YellowBasic
 
 
 @Composable
@@ -69,7 +72,7 @@ fun StatusInfoBar(
                         ), transportType = getNetworkType(context)
                 )
                 Card(modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.Yellow)) {
+                    colors = CardDefaults.cardColors(containerColor = YellowBasic)) {
                     Text(modifier = Modifier.padding(8.dp), text = "Угроза БПЛА")
                 }
             }
@@ -86,20 +89,20 @@ fun StatusInfoBar(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showSMSDialog()}), color = getContainerColor(transportType)) {
-                Icon(imageVector = Icons.Default.Phone, contentDescription = "ok")
-                Icon(imageVector = Icons.Default.Check, contentDescription = "ok")
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showTransportTypeDialog()}), color = getContainerColor(transportType)) {
+                Icon(imageVector = Icons.Default.Phone, contentDescription = "Phone Icon")
+                Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
             }
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showTransportTypeDialog()}), color = Color.Green) {
-                Icon(imageVector = Icons.Default.MailOutline, contentDescription = "ok")
-                Icon(imageVector = Icons.Default.Check, contentDescription = "ok")
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showSMSDialog()}), color = GreenBasic) {
+                Icon(imageVector = Icons.Default.MailOutline, contentDescription = "SMS Icon")
+                Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
             }
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f), color = Color.hsv(50f, 0.96f, 0.88f)) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "ok")
-                Icon(imageVector = Icons.Default.Warning, contentDescription = "ok")
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f), color = YellowBasic) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Air Alert Icon")
+                Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning")
             }
     //        Card(modifier = Modifier
     //            .fillMaxWidth()
@@ -113,7 +116,7 @@ fun StatusInfoBar(
     //                Icon(imageVector = Icons.Default.Check, contentDescription = "ok")
     //            }
     //        }
-            Card(modifier = Modifier.fillMaxWidth().weight(1f).height(30.dp).clickable(onClick = {isExpanded = true}),
+            Card(modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isExpanded = true}),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
@@ -124,8 +127,9 @@ fun StatusInfoBar(
 
     }
     Card(modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = getContainerColor(transportType))) {
-        Text(modifier = Modifier.padding(8.dp), text = "Текущий статус: Норм • 16:40")
+        colors = CardDefaults.cardColors(containerColor = MainRepository.getCurrentStatusColor())) {
+        Text(modifier = Modifier.padding(8.dp), text = "Текущий статус: ${MainRepository.getCurrentStatus()} • ${MainRepository.getReadableTime(
+            MainRepository.lastTimeOfCheck.value)}")
     }
 
 }

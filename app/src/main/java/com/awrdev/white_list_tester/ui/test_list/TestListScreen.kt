@@ -53,10 +53,10 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
     }
     for (item in listToCheck.resourcesList){
         if (item.url in MainRepository.savedStatuses){
-            status.add("${MainRepository.savedStatuses[item.url]} ${item.name}")
+            status.add("${MainRepository.savedStatuses[item.url]}")
         }
         else{
-            status.add("${item.name} Не проверено")
+            status.add("Не проверено")
         }
     }
     LazyColumn(modifier = modifier) {
@@ -81,6 +81,7 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
+                resourceName = item.name,
                 statusCode = status[key]
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -97,7 +98,7 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
                     for ((i, element) in listToCheck.resourcesList.withIndex()){
                         withContext(Dispatchers.IO) {
                             MainRepository.updateOrAddResourceStatus(element.url, checkHost(element.url))
-                            status[i] = "${checkHost(element.url)}  ${element.name}"
+                            status[i] = checkHost(element.url)
                             Log.d("AWR2", i.toString())
                         }
                     }

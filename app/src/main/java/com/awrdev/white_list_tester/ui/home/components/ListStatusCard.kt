@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.awrdev.white_list_tester.repository.MainRepository
+import com.awrdev.white_list_tester.repository.MainRepository.getReadableTime
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,10 +48,3 @@ fun ListStatusCard(modifier: Modifier = Modifier, title: String, status: String)
     }
 }
 
-fun getReadableTime(time: LocalDateTime): String{
-    val diff = Duration.between(LocalDateTime.now(), time)
-    return when(diff.toMinutes()){
-        in 0 .. 1 -> "Now"
-        else -> MainRepository.lastTimeOfCheck.value.truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_TIME)
-    }
-}

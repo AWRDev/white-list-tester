@@ -20,27 +20,26 @@ class NetworkWorker(context: Context, workerParams: WorkerParameters): Coroutine
     val localContext = context
     override suspend fun doWork(): Result {
         return try {
-            val whiteListStatus =  mutableStateOf("Not checked yet")
-            val RussiaStatus =  mutableStateOf("Not checked yet")
-            val ForeignStatus =  mutableStateOf("Not checked yet")
-            val BannedStatus =  mutableStateOf("Not checked yet")
-            MainRepository.updateOrSetLevel(0)
-            // Выполняем ваш запрос в интернет (например, через Retrofit / Ktor)
             Log.d("WORKER", "Worker has been started")
-            whiteListStatus.value = testWhiteList()
-            RussiaStatus.value = testRussianWebsites()
-            ForeignStatus.value = testForeignWebsites()
-            BannedStatus.value = testBannedWebsites()
-            if (whiteListStatus.value == "Available"){
+            MainRepository.updateListStatus("WL", testWhiteList(localContext))
+            MainRepository.updateListStatus("RU", testRussianWebsites(localContext))
+            MainRepository.updateListStatus("WWW", testForeignWebsites(localContext))
+            MainRepository.updateListStatus("BAN", testBannedWebsites(localContext))
+
+            if (MainRepository.whiteListStatus.value == "Network Sleeping"){
+                return Result.retry()
+            }
+            MainRepository.updateOrSetLevel(0)
+            if (MainRepository.whiteListStatus.value == "Available"){
                 MainRepository.updateOrSetLevel(1)
             }
-            if (RussiaStatus.value == "Available"){
+            if (MainRepository.RussiaStatus.value == "Available"){
                 MainRepository.updateOrSetLevel(2)
             }
-            if (ForeignStatus.value == "Available"){
+            if (MainRepository.ForeignStatus.value == "Available"){
                 MainRepository.updateOrSetLevel(3)
             }
-            if (BannedStatus.value == "Available"){
+            if (MainRepository.BannedStatus.value == "Available"){
                 MainRepository.updateOrSetLevel(4)
             }
             val notification = NotificationCompat.Builder(localContext, "status")

@@ -97,47 +97,25 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
 
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(1)
-        }), title = "Белый список", status = whiteListStatus.value)
+        }), title = "Белый список", status = MainRepository.whiteListStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(2)
-        }), title = "Российские сайты", status = RussiaStatus.value)
+        }), title = "Российские сайты", status = MainRepository.RussiaStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(3)
-        }), title = "Зарубежные сайты", status = ForeignStatus.value)
+        }), title = "Зарубежные сайты", status = MainRepository.ForeignStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(4)
-        }), title = "Заблокированные сайты", status = BannedStatus.value)
+        }), title = "Заблокированные сайты", status = MainRepository.BannedStatus.value)
         Spacer(modifier = Modifier.height(50.dp))
         Button(onClick = {
-            requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
-            scope.launch {
-                MainRepository.updateOrSetLasTimeOfCheck(LocalDateTime.now())
-                whiteListStatus.value = "In progress"
-                RussiaStatus.value = "In progress"
-                ForeignStatus.value = "In progress"
-                BannedStatus.value = "In progress"
+            MainRepository.updateOrSetLasTimeOfCheck(LocalDateTime.now())
+            MainRepository.whiteListStatus.value = "In progress"
+            MainRepository.RussiaStatus.value = "In progress"
+            MainRepository.ForeignStatus.value = "In progress"
+            MainRepository.BannedStatus.value = "In progress"
 
-                whiteListStatus.value = testWhiteList()
-                RussiaStatus.value = testRussianWebsites()
-                ForeignStatus.value = testForeignWebsites()
-                BannedStatus.value = testBannedWebsites()
-                if (whiteListStatus.value == "Available"){
-                    MainRepository.updateOrSetLevel(1)
-                }
-                if (RussiaStatus.value == "Available"){
-                    MainRepository.updateOrSetLevel(2)
-                }
-                if (ForeignStatus.value == "Available"){
-                    MainRepository.updateOrSetLevel(3)
-                }
-                if (BannedStatus.value == "Available"){
-                    MainRepository.updateOrSetLevel(4)
-                }
-            }
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Новая проверка")
-        }
-        Button(onClick = {
+            requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
             viewModel.singleRequest(context)
 
             val notification = NotificationCompat.Builder(context, "status")
@@ -148,7 +126,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(1, notification.build())
         }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Разовый воркер")
+            Text(text = "Проверить сейчас")
         }
 
         Button(onClick = {
