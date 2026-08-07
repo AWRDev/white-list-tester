@@ -91,35 +91,9 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
     val isInfoBarExpanded = remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(8.dp)) {
-        if (isInfoBarExpanded.value == false){
-            StatusInfoBar(modifier = Modifier.fillMaxWidth(), expand = {isInfoBarExpanded.value = true})
-        }
-        else{
-            Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                Column(modifier = Modifier.fillMaxWidth().weight(3f)) {
-                    AllowSMSCard(modifier = Modifier.fillMaxWidth()
-                        .clickable(onClick = {
-                            isSMSDialogShown.value = true
-                        }))
-                    TransportTypeCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = {
-                                isDialogShown.value = true
-                            }), transportType = getNetworkType(context)
-                    )
-                }
-                Card(modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isInfoBarExpanded.value = false}),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
-                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center) {
-                        Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "ok")
-                    }
-                }
-            }
-        }
+        StatusInfoBar(modifier = Modifier.fillMaxWidth(), transportType = getNetworkType(context),
+            showSMSDialog = {isSMSDialogShown.value = true}, showTransportTypeDialog = {isDialogShown.value = true})
         Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "Hello")
 
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(1)
