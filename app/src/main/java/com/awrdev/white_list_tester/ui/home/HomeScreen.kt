@@ -57,6 +57,8 @@ import com.awrdev.white_list_tester.services.NotificationService
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSDialog
 import com.awrdev.white_list_tester.ui.home.components.ListStatusCard
+import com.awrdev.white_list_tester.ui.home.components.air_alert.AirAlertDialog
+import com.awrdev.white_list_tester.ui.home.components.current_status.CurrentStatusDialog
 import com.awrdev.white_list_tester.ui.home.components.info_bar.StatusInfoBar
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeCard
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeInfoDialog
@@ -87,12 +89,17 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
 
     val isDialogShown = remember { mutableStateOf(false) }
     val isSMSDialogShown = remember { mutableStateOf(false) }
+    val isAirAlertDialogShown = remember { mutableStateOf(false) }
+    val isCurrentStatusDialogShown = remember { mutableStateOf(false) }
 
     val isInfoBarExpanded = remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(8.dp)) {
         StatusInfoBar(modifier = Modifier.fillMaxWidth(), transportType = getNetworkType(context),
-            showSMSDialog = {isSMSDialogShown.value = true}, showTransportTypeDialog = {isDialogShown.value = true})
+            showSMSDialog = {isSMSDialogShown.value = true},
+            showTransportTypeDialog = {isDialogShown.value = true},
+            showAirAlertDialog = {isAirAlertDialogShown.value = true},
+            showCurrentStatusDialog = {isCurrentStatusDialogShown.value = true})
         Spacer(modifier = Modifier.height(10.dp))
 
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
@@ -153,6 +160,13 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
         AllowSMSDialog(
             onDismissRequest = { isSMSDialogShown.value = false },
         )
+    }
+    if (isAirAlertDialogShown.value){
+        AirAlertDialog(
+            onDismissRequest = {isAirAlertDialogShown.value = false})
+    }
+    if (isCurrentStatusDialogShown.value){
+        CurrentStatusDialog(onDismissRequest = {isCurrentStatusDialogShown.value = false})
     }
 }
 

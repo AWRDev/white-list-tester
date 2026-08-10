@@ -16,12 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,12 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.awrdev.white_list_tester.repository.MainRepository
+import com.awrdev.white_list_tester.ui.home.components.air_alert.AirAlertCard
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportType.Companion.getContainerColor
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeCard
@@ -54,7 +51,9 @@ fun StatusInfoBar(
     modifier: Modifier = Modifier,
     transportType: String,
     showSMSDialog: () -> Unit,
-    showTransportTypeDialog: ()-> Unit) {
+    showTransportTypeDialog: ()-> Unit,
+    showAirAlertDialog: () -> Unit,
+    showCurrentStatusDialog: () -> Unit) {
     val context = LocalContext.current
 
     var isExpanded by remember { mutableStateOf(false) }
@@ -71,10 +70,13 @@ fun StatusInfoBar(
                             showTransportTypeDialog()}
                         ), transportType = getNetworkType(context)
                 )
-                Card(modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = YellowBasic)) {
-                    Text(modifier = Modifier.padding(8.dp), text = "Угроза БПЛА")
-                }
+                AirAlertCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = {
+                            showAirAlertDialog()
+                        })
+                )
             }
             Card(modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isExpanded = false}),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
@@ -100,7 +102,7 @@ fun StatusInfoBar(
                 Icon(imageVector = Icons.Default.MailOutline, contentDescription = "SMS Icon")
                 Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
             }
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f), color = YellowBasic) {
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showAirAlertDialog()}), color = YellowBasic) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Air Alert Icon")
                 Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning")
             }
@@ -126,7 +128,7 @@ fun StatusInfoBar(
         }
 
     }
-    Card(modifier = Modifier.fillMaxWidth(),
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = {showCurrentStatusDialog()}),
         colors = CardDefaults.cardColors(containerColor = MainRepository.getCurrentStatusColor())) {
         Text(modifier = Modifier.padding(8.dp), text = "Текущий статус: ${MainRepository.getCurrentStatus()} • ${MainRepository.getReadableTime(
             MainRepository.lastTimeOfCheck.value)}")
