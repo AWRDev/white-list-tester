@@ -12,10 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.awrdev.white_list_tester.repository.MainRepository
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 
 @Composable
 fun AirAlertDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
+    val detailsText = when(MainRepository.isAirAlertActive.value){
+        true -> "В регионе действует режим Беспилотной Опасности"
+        false -> "На данный момент информации о беспилотной опасности нет"
+    }
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Column(modifier = Modifier
             .background(MaterialTheme.colorScheme.secondaryContainer,
@@ -23,8 +28,8 @@ fun AirAlertDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) 
             .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AirAlertCard()
-            Text(text = "В регионе действует режим Беспилотной Опасности")
+            AirAlertCard(isActive = MainRepository.isAirAlertActive.value)
+            Text(text = detailsText)
             Button(onClick = {onDismissRequest()}) {
                 Text(text = "Понятно")
             }

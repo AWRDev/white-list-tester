@@ -82,10 +82,6 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val whiteListStatus = remember { mutableStateOf("Not checked yet") }
-    val RussiaStatus = remember { mutableStateOf("Not checked yet") }
-    val ForeignStatus = remember { mutableStateOf("Not checked yet") }
-    val BannedStatus = remember { mutableStateOf("Not checked yet") }
 
     val isDialogShown = remember { mutableStateOf(false) }
     val isSMSDialogShown = remember { mutableStateOf(false) }

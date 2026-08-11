@@ -1,7 +1,10 @@
 package com.awrdev.white_list_tester.repository
 
 import android.R
+import android.graphics.drawable.Icon
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -26,6 +29,9 @@ object MainRepository {
     val ForeignStatus =  mutableStateOf("Not checked yet")
     val BannedStatus =  mutableStateOf("Not checked yet")
 
+    val isSMSAllowed = mutableStateOf(false)
+    val isAirAlertActive = mutableStateOf(false)
+
     fun updateOrAddResourceStatus(resourceUrl: String, newStatus: String){
         savedStatuses[resourceUrl] = newStatus
     }
@@ -34,13 +40,25 @@ object MainRepository {
     }
     fun getCurrentStatus(): String{
         when(currentLevel.intValue){
-            0 -> return "Нет связи"
+            0 -> return "Не проверено"
             1 -> return "Белый список"
             2 -> return "Россия"
             3 -> return "Норм"
             4 -> return "Оттепель!"
             else -> return "N/A"
         }
+    }
+
+    fun getCurrentStatusDetailed(): String{
+        when(currentLevel.intValue){
+            0 -> return "Запустите проверку, чтобы узнать актуальный статус"
+            1 -> return "Доступны только самые необходимые ресурсы"
+            2 -> return "Возникли трудности с получением данных с зарубежных сайтов"
+            3 -> return "В целом всё ок"
+            4 -> return "Доступны все сайты!"
+            else -> return "N/A"
+        }
+
     }
 
     fun getCurrentStatusIcon(): Int{
@@ -84,6 +102,28 @@ object MainRepository {
             "WWW" -> ForeignStatus.value = status
             "BAN" -> BannedStatus.value = status
             else -> {Log.e("AWR-RepoUpdate", "Unknown list name")}
+        }
+    }
+
+    fun getSMSStatusColor(): Color{
+        when(isSMSAllowed.value){
+            true -> return GreenBasic
+            false -> return YellowBasic
+        }
+    }
+
+    fun getAirAlertColor(): Color{
+        when(isAirAlertActive.value){
+            true -> return YellowBasic
+            false -> return GreenBasic
+        }
+    }
+
+
+    fun getAirAlertIcon(): Color{
+        when(isSMSAllowed.value){
+            true -> return GreenBasic
+            false -> return YellowBasic
         }
     }
 }

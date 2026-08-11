@@ -16,10 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -60,22 +62,28 @@ fun StatusInfoBar(
     if (isExpanded){
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
             Column(modifier = Modifier.fillMaxWidth().weight(3f)) {
-                AllowSMSCard(modifier = Modifier.fillMaxWidth()
-                    .clickable(onClick = {showSMSDialog()})
-                )
                 TransportTypeCard(
                     modifier = Modifier
+                        .padding(4.dp)
                         .fillMaxWidth()
                         .clickable(onClick = {
                             showTransportTypeDialog()}
                         ), transportType = getNetworkType(context)
                 )
+                AllowSMSCard(modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .clickable(onClick = {showSMSDialog()}),
+                    isAllowed = MainRepository.isSMSAllowed.value
+                )
                 AirAlertCard(
                     modifier = Modifier
+                        .padding(4.dp)
                         .fillMaxWidth()
                         .clickable(onClick = {
                             showAirAlertDialog()
-                        })
+                        }),
+                    isActive = MainRepository.isAirAlertActive.value
                 )
             }
             Card(modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isExpanded = false}),
@@ -98,13 +106,19 @@ fun StatusInfoBar(
                 Icon(imageVector = Icons.Default.Phone, contentDescription = "Phone Icon")
                 Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
             }
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showSMSDialog()}), color = GreenBasic) {
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showSMSDialog()}), color = MainRepository.getSMSStatusColor()) {
                 Icon(imageVector = Icons.Default.MailOutline, contentDescription = "SMS Icon")
-                Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
+                when(MainRepository.isSMSAllowed.value){
+                    true -> Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
+                    false -> Icon(imageVector = Icons.Default.Close, contentDescription = "Не разрешено")
+                }
             }
-            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showAirAlertDialog()}), color = YellowBasic) {
+            StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showAirAlertDialog()}), color = MainRepository.getAirAlertColor()) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Air Alert Icon")
-                Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning")
+                when(MainRepository.isAirAlertActive.value){
+                    true -> Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning")
+                    false -> Icon(imageVector = Icons.Default.ThumbUp, contentDescription = "Спокойно")
+                }
             }
     //        Card(modifier = Modifier
     //            .fillMaxWidth()
@@ -118,7 +132,7 @@ fun StatusInfoBar(
     //                Icon(imageVector = Icons.Default.Check, contentDescription = "ok")
     //            }
     //        }
-            Card(modifier = Modifier.fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isExpanded = true}),
+            Card(modifier = Modifier.padding(4.dp).fillMaxWidth().weight(1f).fillMaxHeight().clickable(onClick = {isExpanded = true}),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
@@ -128,7 +142,9 @@ fun StatusInfoBar(
         }
 
     }
-    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = {showCurrentStatusDialog()}),
+    Card(modifier = Modifier
+        .padding(4.dp)
+        .fillMaxWidth().clickable(onClick = {showCurrentStatusDialog()}),
         colors = CardDefaults.cardColors(containerColor = MainRepository.getCurrentStatusColor())) {
         Text(modifier = Modifier.padding(8.dp), text = "Текущий статус: ${MainRepository.getCurrentStatus()} • ${MainRepository.getReadableTime(
             MainRepository.lastTimeOfCheck.value)}")
@@ -139,10 +155,12 @@ fun StatusInfoBar(
 @Composable
 fun StatusCard(modifier: Modifier = Modifier, color: Color,content: @Composable RowScope.() -> Unit) {
     Card(modifier = modifier
+        .padding(4.dp)
         .background(color, shape = RoundedCornerShape(12.dp))
         .padding(4.dp)
     ) {
-        Row(modifier = Modifier.background(color).fillMaxWidth()) {
+        Row(modifier = Modifier.background(color).fillMaxWidth().padding(4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween) {
             content()
         }
     }
