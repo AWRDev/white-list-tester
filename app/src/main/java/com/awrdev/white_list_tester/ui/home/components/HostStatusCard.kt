@@ -16,22 +16,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.awrdev.white_list_tester.ui.theme.GreenBasic
+import com.awrdev.white_list_tester.ui.theme.GreyBasic
+import com.awrdev.white_list_tester.ui.theme.RedBasic
 import com.awrdev.white_list_tester.ui.theme.WhitelisttesterTheme
+import com.awrdev.white_list_tester.ui.theme.YellowBasic
+import com.awrdev.white_list_tester.ui.theme.YellowLight
 
 @Composable
 fun HostStatusCard(modifier: Modifier = Modifier, resourceName:String, statusCode: String) {
-    var cardColor: Color? = null
-    cardColor = when(statusCode[0]){
-        'Н' -> Color.hsv(34f, 0.13f, 0.76f)
-        'П' -> Color.hsv(59f, 0.29f, 0.92f)
-        '2' -> Color.hsv(142f, 0.96f, 0.88f)
-        '3' -> Color.hsv(50f, 0.96f, 0.88f)
-        '4' -> Color.hsv(11f, 0.96f, 0.88f)
-        '5' -> Color.hsv(11f, 0.96f, 0.88f)
-        else -> Color.hsv(11f, 0.96f, 0.88f)
+    val cardColor = when(statusCode[0]){
+        'Н' -> GreyBasic
+        'П' -> YellowLight
+        '2' -> GreenBasic
+        '3' -> YellowBasic
+        '4' -> RedBasic
+        '5' -> RedBasic
+        else -> RedBasic
     }
     Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = cardColor)) {
-        Column(modifier = Modifier.fillMaxWidth().height(100.dp),
+        Column(modifier = Modifier.fillMaxWidth().height(50.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "$resourceName $statusCode", color = Color.Black, fontSize = 24.sp)

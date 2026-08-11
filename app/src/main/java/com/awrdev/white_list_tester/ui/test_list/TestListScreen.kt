@@ -2,6 +2,8 @@ package com.awrdev.white_list_tester.ui.test_list
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,47 +69,71 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
                 .fillMaxWidth()
                 .height(50.dp)
                 .background(MaterialTheme.colorScheme.primary),
-                verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {back()}) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Go back",
-                        tint = MaterialTheme.colorScheme.onPrimary)
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {back()}) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back",
+                            tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                    Text(text = listToCheck.listName,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 24.sp)
                 }
-                Text(text = listToCheck.listName,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 24.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {
+                        scope.launch {
+                            for (i in status.indices){
+                                status[i] = "Проверяем"
+                                Log.d("AWR1", i.toString())
+                            }
+                            delay(1000L.milliseconds)
+
+                            for ((i, element) in listToCheck.resourcesList.withIndex()){
+                                withContext(Dispatchers.IO) {
+                                    MainRepository.updateOrAddResourceStatus(element.url, checkHost(element.url))
+                                    status[i] = checkHost(element.url)
+                                    Log.d("AWR2", i.toString())
+                                }
+                            }
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Default.Refresh,
+                            contentDescription = "Проверить",
+                            tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Options",
+                            tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                }
+
             }
+            Spacer(modifier = Modifier.height(15.dp))
         }
         itemsIndexed(listToCheck.resourcesList){key, item ->
             HostStatusCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .clickable(
+                        onClick = {
+                            scope.launch {
+                                status[key] = "Проверяем"
+                                withContext(Dispatchers.IO) {
+                                    MainRepository.updateOrAddResourceStatus(item.url, checkHost(item.url))
+                                    status[key] = checkHost(item.url)
+                                }
+
+                            }
+                        }
+                    ),
                 resourceName = item.name,
                 statusCode = status[key]
             )
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-        item{
-            Button(onClick = {
-                scope.launch {
-                    for (i in status.indices){
-                        status[i] = "Проверяем"
-                        Log.d("AWR1", i.toString())
-                    }
-                    delay(1000L.milliseconds)
-
-                    for ((i, element) in listToCheck.resourcesList.withIndex()){
-                        withContext(Dispatchers.IO) {
-                            MainRepository.updateOrAddResourceStatus(element.url, checkHost(element.url))
-                            status[i] = checkHost(element.url)
-                            Log.d("AWR2", i.toString())
-                        }
-                    }
-                }
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Начать проверку")
-            }
+            Spacer(modifier = Modifier.height(5.dp))
         }
     }
 }

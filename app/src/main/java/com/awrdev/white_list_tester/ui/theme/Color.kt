@@ -12,4 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val GreenBasic = Color.hsv(142f, 0.74f, 0.77f)
 val YellowBasic = Color.hsv(50f, 0.74f, 0.77f)
+val YellowLight = Color.hsv(59f, 0.29f, 0.92f)
 val RedBasic = Color.hsv(344f, 0.74f, 0.77f)
+val GreyBasic = Color.hsv(34f, 0.13f, 0.76f)
