@@ -3,8 +3,10 @@ package com.awrdev.white_list_tester.ui.home.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -27,8 +29,8 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun ListStatusCard(modifier: Modifier = Modifier, title: String, status: String) {
-    Card(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+    Card(modifier = modifier.padding(vertical = 2.dp)) {
+        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = title)

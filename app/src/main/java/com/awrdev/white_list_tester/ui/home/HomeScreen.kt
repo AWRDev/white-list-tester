@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
@@ -89,7 +91,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
     val isAirAlertDialogShown = remember { mutableStateOf(false) }
     val isCurrentStatusDialogShown = remember { mutableStateOf(false) }
 
-    val isInfoBarExpanded = remember { mutableStateOf(false) }
+    val isPeriodicActive = remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(8.dp)) {
         StatusInfoBar(modifier = Modifier.fillMaxWidth(), transportType = getNetworkType(context),
@@ -111,7 +113,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
             action(4)
         }), title = "Заблокированные сайты", status = MainRepository.BannedStatus.value)
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.fillMaxHeight().weight(1f))
         Button(onClick = {
             MainRepository.updateOrSetLasTimeOfCheck(LocalDateTime.now())
             MainRepository.whiteListStatus.value = "In progress"
@@ -120,7 +122,12 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
             MainRepository.BannedStatus.value = "In progress"
 
             requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
-            viewModel.singleRequest(context)
+            if (isPeriodicActive.value == false){
+                viewModel.singleRequest(context)
+            }
+            else{
+                viewModel.periodicRequest(context)
+            }
 
             val notification = NotificationCompat.Builder(context, "status")
                 .setContentTitle("Статус")
@@ -130,21 +137,14 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(1, notification.build())
         }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Проверить сейчас")
+            Text(text = "Запустить проверку")
         }
-
-        Button(onClick = {
-            viewModel.periodicRequest(context)
-
-            val notification = NotificationCompat.Builder(context, "status")
-                .setContentTitle("Статус")
-                .setContentText(MainRepository.getCurrentStatus())
-                .setSmallIcon(MainRepository.getCurrentStatusIcon())
-                .setOngoing(true)
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.notify(1, notification.build())
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Периодический воркер")
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = isPeriodicActive.value,
+                onCheckedChange = {isPeriodicActive.value = !isPeriodicActive.value})
+            Text(text = "Проверять периодически")
         }
     }
     if (isDialogShown.value) {

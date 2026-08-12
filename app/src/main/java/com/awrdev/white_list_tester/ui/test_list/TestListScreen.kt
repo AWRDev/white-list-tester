@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +50,14 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
     val scope = rememberCoroutineScope()
     val message = remember { mutableStateOf("Не проверено") }
     val status = remember { mutableStateListOf<String>() }
+
+    val description = when(listToCheck){
+        1 -> "Важные ресурсы, которые доступны всегда"
+        2 -> "Различные российские развлекательные и информационные сайты"
+        3 -> "Различные зарубежные развлекательные и информационные сайты"
+        4 -> "Сайты в этом списке внесены в список заблокированных по решению Роскомнадзора. Их недоступность - корректный результат"
+        else -> "Описание"
+    }
     val listToCheck = when(listToCheck){
         1 -> ResourcesList.WhiteList
         2 -> ResourcesList.RussianWebsites
@@ -55,6 +65,7 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
         4 -> ResourcesList.BannedWebsites
         else -> ResourcesList.BannedWebsites
     }
+
     for (item in listToCheck.resourcesList){
         if (item.url in MainRepository.savedStatuses){
             status.add("${MainRepository.savedStatuses[item.url]}")
@@ -111,6 +122,14 @@ fun TestListScreen(modifier: Modifier = Modifier, listToCheck: Int, back: ()->Un
                     }
                 }
 
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center) {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = description, modifier = Modifier.fillMaxWidth().padding(4.dp))
+                }
             }
             Spacer(modifier = Modifier.height(15.dp))
         }
