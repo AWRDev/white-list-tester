@@ -29,7 +29,7 @@ fun AirAlertDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AirAlertCard(isActive = MainRepository.isAirAlertActive.value)
-            Text(text = detailsText)
+            Text(text = detailsText, modifier = Modifier.padding(8.dp))
             Button(onClick = {onDismissRequest()}) {
                 Text(text = "Понятно")
             }

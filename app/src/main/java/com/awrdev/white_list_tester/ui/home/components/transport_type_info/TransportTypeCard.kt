@@ -10,14 +10,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.awrdev.white_list_tester.ConnectionTypes
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportType.Companion.getContainerColor
+import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportType.Companion.getTypeTitle
 
 @Composable
-fun TransportTypeCard(modifier: Modifier = Modifier, transportType: String) {
+fun TransportTypeCard(modifier: Modifier = Modifier, transportType: ConnectionTypes) {
     val containerColor = getContainerColor(transportType)
     Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = containerColor)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(modifier = Modifier.padding(8.dp), text = transportType)
+            Text(modifier = Modifier.padding(8.dp), text = getTypeTitle(transportType))
             TransportTypeIcon(transportType = transportType)
         }
     }

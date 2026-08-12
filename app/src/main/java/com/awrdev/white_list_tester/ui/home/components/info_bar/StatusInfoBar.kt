@@ -38,11 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.awrdev.white_list_tester.ConnectionTypes
 import com.awrdev.white_list_tester.repository.MainRepository
 import com.awrdev.white_list_tester.ui.home.components.air_alert.AirAlertCard
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportType.Companion.getContainerColor
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeCard
+import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeIcon
 import com.awrdev.white_list_tester.ui.home.getNetworkType
 import com.awrdev.white_list_tester.ui.theme.GreenBasic
 import com.awrdev.white_list_tester.ui.theme.YellowBasic
@@ -51,7 +53,7 @@ import com.awrdev.white_list_tester.ui.theme.YellowBasic
 @Composable
 fun StatusInfoBar(
     modifier: Modifier = Modifier,
-    transportType: String,
+    transportType: ConnectionTypes,
     showSMSDialog: () -> Unit,
     showTransportTypeDialog: ()-> Unit,
     showAirAlertDialog: () -> Unit,
@@ -104,7 +106,7 @@ fun StatusInfoBar(
         ) {
             StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showTransportTypeDialog()}), color = getContainerColor(transportType)) {
                 Icon(imageVector = Icons.Default.Phone, contentDescription = "Phone Icon")
-                Icon(imageVector = Icons.Default.Check, contentDescription = "OK")
+                TransportTypeIcon(transportType = getNetworkType(context))
             }
             StatusCard(modifier = Modifier.fillMaxWidth().weight(1f).clickable(onClick = {showSMSDialog()}), color = MainRepository.getSMSStatusColor()) {
                 Icon(imageVector = Icons.Default.MailOutline, contentDescription = "SMS Icon")

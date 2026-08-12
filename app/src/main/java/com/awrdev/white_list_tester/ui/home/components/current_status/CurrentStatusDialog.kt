@@ -29,7 +29,7 @@ fun CurrentStatusDialog(modifier: Modifier = Modifier, onDismissRequest: () -> U
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = MainRepository.getCurrentStatus(), modifier = Modifier.fillMaxWidth(), fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start)
-            Text(text = MainRepository.getCurrentStatusDetailed())
+            Text(text = MainRepository.getCurrentStatusDetailed(), modifier = Modifier.padding(8.dp))
             Button(onClick = {onDismissRequest()}) {
                 Text(text = "Понятно")
             }

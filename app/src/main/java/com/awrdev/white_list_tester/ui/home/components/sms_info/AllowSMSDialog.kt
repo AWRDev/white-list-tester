@@ -22,7 +22,7 @@ fun AllowSMSDialog(modifier: Modifier = Modifier, onDismissRequest: ()-> Unit) {
             .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Разрешите доступ к СМС, чтобы приложение могло узнавать о предупреждениях МЧС (это необязательно)")
+            Text(text = "Разрешите доступ к СМС, чтобы приложение могло узнавать о предупреждениях МЧС (это необязательно)", modifier = Modifier.padding(8.dp))
             Button(onClick = {onDismissRequest()}) {
                 Text(text = "Понятно")
             }

@@ -15,9 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.awrdev.white_list_tester.ConnectionTypes
 
 @Composable
-fun TransportTypeInfoDialog(modifier: Modifier = Modifier, onDismissRequest: ()-> Unit, transportType: String) {
+fun TransportTypeInfoDialog(modifier: Modifier = Modifier, onDismissRequest: ()-> Unit, transportType: ConnectionTypes) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Column(modifier = Modifier
             .background(MaterialTheme.colorScheme.secondaryContainer,
@@ -27,7 +28,7 @@ fun TransportTypeInfoDialog(modifier: Modifier = Modifier, onDismissRequest: ()-
         ) {
             TransportTypeCard(transportType = transportType)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Во время проверки убедитесь, что выход в Интернет осуществляется через мобильную сеть, так как на проводном соединении белые списки не применяются (по крайней мере, пока)")
+            Text(text = "Во время проверки убедитесь, что выход в Интернет осуществляется через мобильную сеть, так как на проводном соединении белые списки не применяются (по крайней мере, пока)", modifier = Modifier.padding(8.dp))
             Button(onClick = {onDismissRequest()}) {
                 Text(text = "Хорошо, я поменяю")
             }

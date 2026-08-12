@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startForegroundService
+import com.awrdev.white_list_tester.ConnectionTypes
 import com.awrdev.white_list_tester.api.ConnectivityTester.testBannedWebsites
 import com.awrdev.white_list_tester.api.ConnectivityTester.testForeignWebsites
 import com.awrdev.white_list_tester.api.ConnectivityTester.testRussianWebsites
@@ -168,29 +169,32 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
 
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-fun getNetworkType(context: Context): String {
+fun getNetworkType(context: Context): ConnectionTypes {
     // Получаем ConnectivityManager из контекста системы
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     // Получаем текущую активную сеть
-    val activeNetwork = connectivityManager.activeNetwork ?: return "Нет подключения"
+    val activeNetwork = connectivityManager.activeNetwork ?: return ConnectionTypes.NO_CONNECTION
 
     // Получаем характеристики (возможности) активной сети
     val capabilities =
-        connectivityManager.getNetworkCapabilities(activeNetwork) ?: return "Нет подключения"
+        connectivityManager.getNetworkCapabilities(activeNetwork) ?: return ConnectionTypes.NO_CONNECTION
 
     return when {
+        // Проверяем подключение через VPN, первым, чтобы предупредить сразу
+        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> ConnectionTypes.USES_VPN
         // Проверяем подключение через Wi-Fi
-        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi-Fi"
+        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionTypes.WI_FI
 
         // Проверяем подключение через мобильные данные (3G/4G/5G)
-        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Мобильная связь"
+        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionTypes.CELLULAR
 
         // Проверяем проводное подключение (Ethernet)
-        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
+        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionTypes.ETHERNET
 
-        else -> "Другой тип подключения"
+
+        else -> ConnectionTypes.OTHER
     }
 }
 
