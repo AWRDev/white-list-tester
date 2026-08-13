@@ -1,7 +1,6 @@
 package com.awrdev.white_list_tester.ui.home
 
 import android.Manifest
-import android.R
 import android.app.NotificationManager
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.Column
@@ -18,58 +17,32 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startForegroundService
 import com.awrdev.white_list_tester.ConnectionTypes
-import com.awrdev.white_list_tester.api.ConnectivityTester.testBannedWebsites
-import com.awrdev.white_list_tester.api.ConnectivityTester.testForeignWebsites
-import com.awrdev.white_list_tester.api.ConnectivityTester.testRussianWebsites
-import com.awrdev.white_list_tester.api.ConnectivityTester.testWhiteList
 import com.awrdev.white_list_tester.repository.MainRepository
-import com.awrdev.white_list_tester.services.NotificationService
-import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSCard
 import com.awrdev.white_list_tester.ui.home.components.sms_info.AllowSMSDialog
 import com.awrdev.white_list_tester.ui.home.components.ListStatusCard
 import com.awrdev.white_list_tester.ui.home.components.air_alert.AirAlertDialog
 import com.awrdev.white_list_tester.ui.home.components.current_status.CurrentStatusDialog
 import com.awrdev.white_list_tester.ui.home.components.info_bar.StatusInfoBar
-import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeCard
 import com.awrdev.white_list_tester.ui.home.components.transport_type_info.TransportTypeInfoDialog
 import java.time.LocalDateTime
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: (Int)->Unit) {
+fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, selectListScreen: (Int)->Unit) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -102,16 +75,16 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel, action: 
         Spacer(modifier = Modifier.height(10.dp))
 
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
-            action(1)
+            selectListScreen(1)
         }), title = "Белый список", status = MainRepository.whiteListStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
-            action(2)
+            selectListScreen(2)
         }), title = "Российские сайты", status = MainRepository.RussiaStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
-            action(3)
+            selectListScreen(3)
         }), title = "Зарубежные сайты", status = MainRepository.ForeignStatus.value)
         ListStatusCard(modifier = Modifier.fillMaxWidth().height(50.dp).clickable(onClick = {
-            action(4)
+            selectListScreen(4)
         }), title = "Заблокированные сайты", status = MainRepository.BannedStatus.value)
         Spacer(modifier = Modifier.fillMaxHeight().weight(1f))
         Button(onClick = {
@@ -196,12 +169,4 @@ fun getNetworkType(context: Context): ConnectionTypes {
 
         else -> ConnectionTypes.OTHER
     }
-}
-
-@Composable
-fun GetFakeStatus(): Unit{
-    return arrayOf(
-        Icon(imageVector = Icons.Default.Check, contentDescription = ""),
-        Icon(imageVector = Icons.Default.Refresh, contentDescription = ""),
-        Icon(imageVector = Icons.Default.Close, contentDescription = "")).random()
 }

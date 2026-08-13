@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.awrdev.white_list_tester.R
 import com.awrdev.white_list_tester.repository.MainRepository
 import com.awrdev.white_list_tester.repository.MainRepository.getReadableTime
 import java.time.Duration
@@ -39,8 +41,8 @@ fun ListStatusCard(modifier: Modifier = Modifier, title: String, status: String)
                     Text(text = "${getReadableTime(MainRepository.lastTimeOfCheck.value)} • ")
                 }
                 when (status){
-                    "Not checked yet" -> Icon(imageVector = Icons.Default.DateRange, contentDescription = status)
-                    "In progress" -> Icon(imageVector = Icons.Default.Refresh, contentDescription = status)
+                    "Not checked yet" -> Icon(painter = painterResource(R.drawable.baseline_question_mark_24), contentDescription = status)
+                    "In progress" -> Icon(painter = painterResource(R.drawable.baseline_access_time_24), contentDescription = status)
                     "Available" -> Icon(imageVector = Icons.Default.Check, contentDescription = status)
                     "Partially available" -> Icon(imageVector = Icons.Default.Warning, contentDescription = status)
                     "Not available" -> Icon(imageVector = Icons.Default.Close, contentDescription = status)
